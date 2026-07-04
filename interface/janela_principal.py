@@ -3,6 +3,14 @@ from interface.controlador import Controlador
 
 ctk.set_appearance_mode("System")
 
+COMPETICOES = {
+    "Copa do Mundo": 1,
+    "Premier League": 39,
+    "La Liga": 140,
+}
+
+TEMPORADAS = ["2022", "2023", "2024"]
+
 
 class JanelaPrincipal(ctk.CTk):
     def __init__(self):
@@ -10,12 +18,11 @@ class JanelaPrincipal(ctk.CTk):
         self.controlador = Controlador()
 
         self.title("Artilheiros da Copa")
-        self.geometry("600x600")
+        self.geometry("800x600")
 
         self._montar_tela_inicial()
 
     def _montar_tela_inicial(self):
-        """Tela inicial: só o botão pra começar."""
         self.frame_inicial = ctk.CTkFrame(self)
         self.frame_inicial.pack(expand=True, fill="both")
 
@@ -30,27 +37,44 @@ class JanelaPrincipal(ctk.CTk):
         botao_ver.pack(pady=10)
 
     def _ir_para_lista(self):
-        """Troca a tela inicial pela tela de lista."""
         self.frame_inicial.destroy()
         self._montar_tela_lista()
 
     def _montar_tela_lista(self):
-        """Tela com a lista de artilheiros e botão de atualizar."""
         self.frame_lista = ctk.CTkFrame(self)
         self.frame_lista.pack(expand=True, fill="both")
 
+        # --- Seletor de competição ---
+        self.combo_competicao = ctk.CTkComboBox(
+            self.frame_lista, values=list(COMPETICOES.keys())
+        )
+        self.combo_competicao.set("Copa do Mundo")
+        self.combo_competicao.pack(pady=5)
+
+        # --- Seletor de temporada ---
+        self.combo_temporada = ctk.CTkComboBox(
+            self.frame_lista, values=TEMPORADAS
+        )
+        self.combo_temporada.set("2022")
+        self.combo_temporada.pack(pady=5)
+
+        # --- Botão de atualizar ---
         self.botao_atualizar = ctk.CTkButton(
             self.frame_lista, text="Atualizar da API", command=self._ao_clicar_atualizar
         )
         self.botao_atualizar.pack(pady=10)
 
-        self.lista_texto = ctk.CTkTextbox(self.frame_lista, width=500, height=500)
+        self.lista_texto = ctk.CTkTextbox(self.frame_lista, width=350, height=350)
         self.lista_texto.pack(pady=10)
 
         self._exibir_top(5)
 
     def _ao_clicar_atualizar(self):
-        self.controlador.atualizar_da_api()
+        nome_competicao = self.combo_competicao.get()
+        league_id = COMPETICOES[nome_competicao]
+        season = int(self.combo_temporada.get())
+
+        self.controlador.atualizar_da_api(league_id=league_id, season=season)
         self._exibir_top(5)
 
     def _exibir_top(self, n: int):

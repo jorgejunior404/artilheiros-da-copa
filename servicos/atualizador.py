@@ -21,10 +21,9 @@ class Atualizador:
             jogos=estatisticas['games']['appearences'] or 0,
         )
 
-    def atualizar_tudo(self):
-        """Busca os artilheiros na API, atualiza a lista e salva no arquivo."""
-        dados_brutos = self.client.buscar_artilheiros(league_id=1, season=2022)
+    def atualizar_tudo(self, league_id: int, season: int):
 
+        dados_brutos = self.client.buscar_artilheiros(league_id=league_id, season=season)
         for dado in dados_brutos:
             jogador = self._converter_jogador(dado)
             self.lista_artilheiros.atualizar_jogador(jogador)

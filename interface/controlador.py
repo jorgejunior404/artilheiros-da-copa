@@ -14,6 +14,5 @@ class Controlador:
         """Devolve os top N artilheiros já carregados."""
         return self.lista.top(n)
 
-    def atualizar_da_api(self):
-        """Busca dados novos na API e atualiza a lista."""
-        self.atualizador.atualizar_tudo()
+    def atualizar_da_api(self, league_id: int, season: int):
+        self.atualizador.atualizar_tudo(league_id=league_id, season=season)
