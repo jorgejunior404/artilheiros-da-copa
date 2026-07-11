@@ -10,9 +10,9 @@ class Controlador:
         self.lista.carregar_do_arquivo()
         self.atualizador = Atualizador(self.lista)
 
-    def buscar_top(self, n: int) -> list:
-        """Devolve os top N artilheiros já carregados."""
-        return self.lista.top(n)
+    def buscar_top(self, n: int, competicao: str = None) -> list:
+        """Devolve os top N artilheiros já carregados, opcionalmente filtrados por competição."""
+        return self.lista.top(n, competicao=competicao)
 
-    def atualizar_da_api(self, league_id: int, season: int):
-        self.atualizador.atualizar_tudo(league_id=league_id, season=season)
+    def atualizar_da_api(self, competicao: str, temporada: int = None):
+        self.atualizador.atualizar_tudo(competicao=competicao, temporada=temporada)

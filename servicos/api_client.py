@@ -1,28 +1,34 @@
 import requests
 
-class ApiFootballClient():
+
+class FootballDataClient:
+    """
+    Cliente para a football-data.org API v4 (https://www.football-data.org).
+    Plano free é gratuito pra sempre e cobre a Copa do Mundo (código WC).
+    """
+
     def __init__(self, api_key: str, base_url: str):
         self.api_key = api_key
         self.base_url = base_url
 
-    def buscar_artilheiros(self,league_id: int, season: int) -> list:
+    def buscar_artilheiros(self, competicao: str, temporada: int = None) -> list:
         """
-        busca os artilheiros de uma competição (ex: Copa do Mundo) 
+        Busca os artilheiros de uma competição (ex: "WC" = Copa do Mundo).
+
+        competicao: código da competição na football-data.org (WC, PL, PD, etc.)
+        temporada: ano da temporada (opcional; se omitido, usa a temporada atual)
+
+        Levanta requests.exceptions.RequestException se a chamada falhar
+        (ex: 403 por pedir uma temporada não liberada no plano free).
         """
 
-        url = f"{self.base_url}/players/topscorers"
-        headers = {
-            "x-apisports-key": self.api_key,
-            "Content-Type": "application/json",
-        }
-        params = {"league": league_id, "season": season}
+        url = f"{self.base_url}/competitions/{competicao}/scorers"
+        headers = {"X-Auth-Token": self.api_key}
+        params = {}
+        if temporada:
+            params["season"] = temporada
 
-        try:
-            response = requests.get(url, headers=headers, params=params, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-            return data.get("response", [])
-        except requests.exceptions.RequestException as e:
-            print(f"Erro ao buscar artilheiros: {e}")
-            return []
-    
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("scorers", [])

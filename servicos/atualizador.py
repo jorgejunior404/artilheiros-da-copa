@@ -1,31 +1,31 @@
 from config import API_KEY, API_BASE_URL
-from servicos.api_client import ApiFootballClient
+from servicos.api_client import FootballDataClient
 from servicos.lista_de_artilheiros import ListaArtilheiros
 from modelos.jogador import Jogador
 
 
 class Atualizador:
     def __init__(self, lista_artilheiros: ListaArtilheiros):
-        self.client = ApiFootballClient(api_key=API_KEY, base_url=API_BASE_URL)
+        self.client = FootballDataClient(api_key=API_KEY, base_url=API_BASE_URL)
         self.lista_artilheiros = lista_artilheiros
 
-    def _converter_jogador(self, dado_bruto: dict) -> Jogador:
+    def _converter_jogador(self, dado_bruto: dict, competicao: str) -> Jogador:
         info = dado_bruto['player']
-        estatisticas = dado_bruto['statistics'][0]
 
         return Jogador(
             id_api=info['id'],
             nome=info['name'],
-            selecao=estatisticas['team']['name'],
-            gols=estatisticas['goals']['total'] or 0,
-            jogos=estatisticas['games']['appearences'] or 0,
+            selecao=dado_bruto['team']['name'],
+            competicao=competicao,
+            gols=dado_bruto.get('goals') or 0,
+            jogos=dado_bruto.get('playedMatches') or 0,
         )
 
-    def atualizar_tudo(self, league_id: int, season: int):
+    def atualizar_tudo(self, competicao: str, temporada: int = None):
 
-        dados_brutos = self.client.buscar_artilheiros(league_id=league_id, season=season)
+        dados_brutos = self.client.buscar_artilheiros(competicao=competicao, temporada=temporada)
         for dado in dados_brutos:
-            jogador = self._converter_jogador(dado)
+            jogador = self._converter_jogador(dado, competicao=competicao)
             self.lista_artilheiros.atualizar_jogador(jogador)
 
         self.lista_artilheiros.salvar()

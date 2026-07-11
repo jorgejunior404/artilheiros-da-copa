@@ -7,7 +7,7 @@ lista = ListaArtilheiros(repositorio)
 lista.carregar_do_arquivo()
 
 atualizador = Atualizador(lista)
-atualizador.atualizar_tudo()
+atualizador.atualizar_tudo(competicao="WC")
 
 print("Top 5 após atualização:")
 for jogador in lista.top(5):

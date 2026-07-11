@@ -3,11 +3,12 @@ from dataclasses import dataclass, field
 @dataclass
 class Jogador:
     """
-    representa um jogador na Copa do Mundo
+    representa um jogador artilheiro de uma competição
     """
     id_api: int
     nome : str
     selecao : str
+    competicao: str = ""
     gols: int = 0
     jogos: int = 0
     posicao: str = ""
@@ -33,6 +34,7 @@ class Jogador:
             "id_api": self.id_api,
             "nome": self.nome,
             "selecao": self.selecao,
+            "competicao": self.competicao,
             "gols": self.gols,
             "jogos": self.jogos,
             "posicao": self.posicao,
@@ -46,6 +48,7 @@ class Jogador:
             id_api=data["id_api"],
             nome=data["nome"],
             selecao=data["selecao"],
+            competicao=data.get("competicao", ""),
             gols=data.get("gols", 0),
             jogos=data.get("jogos", 0),
             posicao=data.get("posicao", ""),
@@ -53,4 +56,3 @@ class Jogador:
 
     def __str__(self) -> str:
         return f"{self.nome} ({self.selecao}) - {self.gols} gols"
-        

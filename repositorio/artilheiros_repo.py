@@ -1,4 +1,5 @@
 import json
+import os
 from modelos.jogador import Jogador
 
 
@@ -11,14 +12,23 @@ class RepositorioArtilheiros:
 
         listas_dict = [jogador.to_dict() for jogador in jogadores]
 
-        with open(self.caminho_arquivo,"w",encoding="utf-8") as arquivo:
-            json.dump(listas_dict,arquivo, indent=4, ensure_ascii=False)
+        pasta = os.path.dirname(self.caminho_arquivo)
+        if pasta:
+            os.makedirs(pasta, exist_ok=True)
+
+        with open(self.caminho_arquivo, "w", encoding="utf-8") as arquivo:
+            json.dump(listas_dict, arquivo, indent=4, ensure_ascii=False)
 
     def carregar(self) -> list:
-        """Carrega a lista de jogadores do arquivo JSON."""
+        """Carrega a lista de jogadores do arquivo JSON.
+        Se o arquivo ainda não existir (primeira execução, ou após limpar
+        os dados), devolve uma lista vazia em vez de estourar erro."""
+
+        if not os.path.exists(self.caminho_arquivo):
+            return []
 
         with open(self.caminho_arquivo, "r", encoding="utf-8") as arquivo:
             listas_dict = json.load(arquivo)
 
         jogadores = [Jogador.from_dict(dado) for dado in listas_dict]
-        return jogadores    
+        return jogadores
